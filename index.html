@@ -714,7 +714,7 @@ function submitSelection() {
   document.getElementById('successSub').textContent = `${sel.length} Kanäle · ${tf} Formate — bereit für SharePoint`;
   document.getElementById('successOverlay').classList.add('show');
   console.log('Kanalauswahl:', JSON.stringify(sel, null, 2));
-  fetch('https://christoph-guse.app.n8n.cloud/webhook/save-topspiel-selection', {
+  fetch('https://christoph-guse.app.n8n.cloud/webhook-test/save-topspiel-selection', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json'
