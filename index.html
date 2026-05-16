@@ -709,7 +709,7 @@ function submitSelection() {
       });
     }
   });
-  if (!sel.length) { alert('Bitte mindestens einen Kanal auswählen.'); return; }
+ // Keine Pflichtauswahl für Kanäle
   const tf = sel.reduce((a, s) => a + s.formate.length, 0);
   document.getElementById('successSub').textContent = `${sel.length} Kanäle · ${tf} Formate — bereit für SharePoint`;
   document.getElementById('successOverlay').classList.add('show');
