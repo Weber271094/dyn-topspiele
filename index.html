@@ -714,26 +714,28 @@ function submitSelection() {
   document.getElementById('successSub').textContent = `${sel.length} Kanäle · ${tf} Formate — bereit für SharePoint`;
   document.getElementById('successOverlay').classList.add('show');
   console.log('Kanalauswahl:', JSON.stringify(sel, null, 2));
- fetch('https://christoph-guse.app.n8n.cloud/webhook/save-topspiel-selection', {
+fetch('https://christoph-guse.app.n8n.cloud/webhook/save-topspiel-selection', {
   method: 'POST',
-  mode: 'no-cors',
-body: JSON.stringify({
-  title: document.title,
-  taskId: new URLSearchParams(window.location.search).get('taskId'),
-  channels: sel,
-  eventName: document.getElementById('eventName')?.value || '',
-  logopaket: document.getElementById('logopaket')?.value || '',
-  sendezeiten: document.getElementById('sendezeiten')?.value || '',
-  spielereinsatz: document.getElementById('spielereinsatz')?.value || '',
-  hinweise: document.getElementById('hinweise')?.value || '',
-  timestamp: new Date().toISOString(),
-  hinweiseRedaktion: document.getElementById('hinweiseRedaktion')?.value || '',
-exklusivitaet: radioState['exklusivitaet'] || '',
-finalesWording: document.getElementById('finalesWording')?.value || '',
-freigabeRedaktion: freigabeState['freigabe-redaktion'] || '',
-freigabeMarketing: freigabeState['freigabe-marketing'] || '',
-freigabeGF: freigabeState['freigabe-gf'] || '',
-})
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    title: document.title,
+    taskId: new URLSearchParams(window.location.search).get('taskId'),
+    channels: sel,
+    eventName: document.getElementById('eventName')?.value || '',
+    logopaket: document.getElementById('logopaket')?.value || '',
+    sendezeiten: document.getElementById('sendezeiten')?.value || '',
+    spielereinsatz: document.getElementById('spielereinsatz')?.value || '',
+    hinweise: document.getElementById('hinweise')?.value || '',
+    timestamp: new Date().toISOString(),
+    hinweiseRedaktion: document.getElementById('hinweiseRedaktion')?.value || '',
+    exklusivitaet: radioState['exklusivitaet'] || '',
+    finalesWording: document.getElementById('finalesWording')?.value || '',
+    freigabeRedaktion: freigabeState['freigabe-redaktion'] || '',
+    freigabeMarketing: freigabeState['freigabe-marketing'] || '',
+    freigabeGF: freigabeState['freigabe-gf'] || ''
+  })
 })
 .then(() => {
   console.log('Webhook gesendet');
