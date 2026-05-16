@@ -728,11 +728,11 @@ body: JSON.stringify({
   hinweise: document.getElementById('hinweise')?.value || '',
   timestamp: new Date().toISOString(),
   sonstigeHinweiseRedaktion: document.getElementById('sonstigeHinweiseRedaktion')?.value || '',
-exklusivitaet: document.querySelector('input[name="exklusivitaet"]:checked')?.value || '',
+exklusivitaet: radioState['exklusivitaet'] || '',
 finalesWording: document.getElementById('finalesWording')?.value || '',
-freigabeRedaktion: document.querySelector('input[name="freigabeRedaktion"]:checked')?.value || '',
-freigabeMarketing: document.querySelector('input[name="freigabeMarketing"]:checked')?.value || '',
-freigabeGF: document.querySelector('input[name="freigabeGF"]:checked')?.value || '',
+freigabeRedaktion: freigabeState['freigabe-redaktion'] || '',
+freigabeMarketing: freigabeState['freigabe-marketing'] || '',
+freigabeGF: freigabeState['freigabe-gf'] || '',
 })
 })
 .then(() => {
