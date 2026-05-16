@@ -719,16 +719,16 @@ function submitSelection() {
   headers: {
     'Content-Type': 'application/json'
   },
-  body: JSON.stringify({
-    title: document.title,
-    channels: sel,
-    eventName: document.getElementById('eventName').value,
-    logopaket: document.getElementById('logopaket').value,
-    sendezeiten: document.getElementById('sendezeiten').value,
-    spielereinsatz: document.getElementById('spielereinsatz').value,
-    hinweise: document.getElementById('hinweise').value,
-    timestamp: new Date().toISOString()
-  })
+body: JSON.stringify({
+  title: document.title,
+  channels: sel,
+  eventName: document.getElementById('eventName')?.value || '',
+  logopaket: document.getElementById('logopaket')?.value || '',
+  sendezeiten: document.getElementById('sendezeiten')?.value || '',
+  spielereinsatz: document.getElementById('spielereinsatz')?.value || '',
+  hinweise: document.getElementById('hinweise')?.value || '',
+  timestamp: new Date().toISOString()
+})
 })
 .then(response => response.json())
 .then(data => {
