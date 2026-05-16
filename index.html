@@ -714,25 +714,22 @@ function submitSelection() {
   document.getElementById('successSub').textContent = `${sel.length} Kanäle · ${tf} Formate — bereit für SharePoint`;
   document.getElementById('successOverlay').classList.add('show');
   console.log('Kanalauswahl:', JSON.stringify(sel, null, 2));
-  fetch('https://christoph-guse.app.n8n.cloud/webhook-test/save-topspiel-selection', {
+ fetch('https://christoph-guse.app.n8n.cloud/webhook-test/save-topspiel-selection', {
   method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-body: JSON.stringify({
-  title: document.title,
-  channels: sel,
-  eventName: document.getElementById('eventName')?.value || '',
-  logopaket: document.getElementById('logopaket')?.value || '',
-  sendezeiten: document.getElementById('sendezeiten')?.value || '',
-  spielereinsatz: document.getElementById('spielereinsatz')?.value || '',
-  hinweise: document.getElementById('hinweise')?.value || '',
-  timestamp: new Date().toISOString()
+  mode: 'no-cors',
+  body: JSON.stringify({
+    title: document.title,
+    channels: sel,
+    eventName: document.getElementById('eventName')?.value || '',
+    logopaket: document.getElementById('logopaket')?.value || '',
+    sendezeiten: document.getElementById('sendezeiten')?.value || '',
+    spielereinsatz: document.getElementById('spielereinsatz')?.value || '',
+    hinweise: document.getElementById('hinweise')?.value || '',
+    timestamp: new Date().toISOString()
+  })
 })
-})
-.then(response => response.json())
-.then(data => {
-  console.log('Webhook erfolgreich:', data);
+.then(() => {
+  console.log('Webhook gesendet');
 })
 .catch(error => {
   console.error('Webhook Fehler:', error);
