@@ -741,16 +741,16 @@ freigabeGF: document.querySelector('input[name="freigabeGF"]:checked')?.value ||
 .catch(error => {
   console.error('Webhook Fehler:', error);
 });
-  const inputData = {
-    eventName: document.getElementById('eventName').value,
-    logopaket: document.getElementById('logopaket').value,
-    spielereinsatz: document.getElementById('spielereinsatz').value,
-    sendezeiten: document.getElementById('sendezeiten').value,
-    exklusivitaet: radioState['exklusivitaet'] || '',
-    hinweiseRedaktion: document.getElementById('hinweiseRedaktion').value,
-    finalesWording: document.getElementById('finalesWording').value,
-    freigaben: freigabeState
-  };
+const inputData = {
+  eventName: document.getElementById('eventName').value,
+  logopaket: document.getElementById('logopaket').value,
+  spielereinsatz: document.getElementById('spielereinsatz').value,
+  sendezeiten: document.getElementById('sendezeiten').value,
+  exklusivitaet: radioState['exklusivitaet'] || '',
+  hinweiseRedaktion: document.getElementById('hinweiseRedaktion').value,
+  finalesWording: document.getElementById('finalesWording').value,
+  freigaben: freigabeState
+};
   console.log('Input + Freigaben:', JSON.stringify(inputData, null, 2));
 }
 
