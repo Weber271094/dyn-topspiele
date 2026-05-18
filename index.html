@@ -636,7 +636,7 @@
 <script>
 const CHANNELS = [
   { id: 'social',                   name: 'Social',                                   formats: ['4x5', '9x16'] },
-  { id: 'performance',              name: 'Performance',                              formats: ['4x5', '9x16', '16x9'] },
+  { id: 'performance',              name: 'Performance',                              formats: ['1x1', '9x16', '16x9'] },
   { id: 'plattform_neukunden',      name: 'Plattform Banner/Header — Neukunden',      formats: ['1920x297', '16x9', 'L-Frame (inkl. QRCode)'] },
   { id: 'plattform_bestandskunden', name: 'Plattform Banner/Header — Bestandskunden', formats: ['1920x297', 'L-Frame (inkl. QRCode)'] },
   { id: 'crm',                      name: 'CRM',                                      formats: ['1200x2000', '1x1', 'InApp-Teaser'] },
@@ -699,7 +699,12 @@ function render() {
 function toggleChannel(id) { state[id].active = !state[id].active; render(); }
 function toggleFormat(cid, idx) { state[cid].formats[idx].selected = !state[cid].formats[idx].selected; render(); }
 
-function submitSelection() {
+// ── KONFIGURATION ──────────────────────────────────────────
+// Trage hier die URL deines n8n-Webhooks ein (aus Schritt 3):
+const N8N_WEBHOOK_URL = 'DEINE_N8N_WEBHOOK_URL_HIER_EINTRAGEN';
+// ───────────────────────────────────────────────────────────
+
+async function submitSelection() {
   const sel = [];
   CHANNELS.forEach(ch => {
     if (state[ch.id].active) {
@@ -709,51 +714,65 @@ function submitSelection() {
       });
     }
   });
- // Keine Pflichtauswahl für Kanäle
+  if (!sel.length) { alert('Bitte mindestens einen Kanal auswählen.'); return; }
+
+  const inputData = {
+    eventName:        document.getElementById('eventName').value,
+    logopaket:        document.getElementById('logopaket').value,
+    spielereinsatz:   document.getElementById('spielereinsatz').value,
+    sendezeiten:      document.getElementById('sendezeiten').value,
+    exklusivitaet:    radioState['exklusivitaet'] || '',
+    hinweiseRedaktion:document.getElementById('hinweiseRedaktion').value,
+    finalesWording:   document.getElementById('finalesWording').value,
+    freigaben:        freigabeState
+  };
+
+  // URL-Parameter auslesen (Spielinfos aus Asana-Link)
+  const p = new URLSearchParams(window.location.search);
+  const payload = {
+    spiel: {
+      title:  p.get('title')  || document.getElementById('eventTitle').textContent,
+      date:   p.get('date')   || document.getElementById('eventDate').textContent,
+      comp:   p.get('comp')   || document.getElementById('eventComp').textContent,
+      venue:  p.get('venue')  || document.getElementById('eventVenue').textContent,
+      asana_task_id: p.get('task_id') || ''
+    },
+    kanalauswahl: sel,
+    input_redaktion: inputData
+  };
+
   const tf = sel.reduce((a, s) => a + s.formate.length, 0);
-  document.getElementById('successSub').textContent = `${sel.length} Kanäle · ${tf} Formate — bereit für SharePoint`;
+
+  // Button deaktivieren während Senden
+  const btn = document.querySelector('.btn-submit');
+  btn.textContent = 'Wird gesendet …';
+  btn.disabled = true;
+
+  try {
+    if (N8N_WEBHOOK_URL && N8N_WEBHOOK_URL !== 'DEINE_N8N_WEBHOOK_URL_HIER_EINTRAGEN') {
+      await fetch(N8N_WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      document.getElementById('successSub').textContent =
+        `${sel.length} Kanäle · ${tf} Formate — erfolgreich übermittelt ✓`;
+    } else {
+      // Kein Webhook konfiguriert → nur lokal anzeigen
+      document.getElementById('successSub').textContent =
+        `${sel.length} Kanäle · ${tf} Formate — lokal gespeichert (Webhook nicht konfiguriert)`;
+      console.log('Payload (Webhook nicht konfiguriert):', JSON.stringify(payload, null, 2));
+    }
+  } catch(err) {
+    document.getElementById('successSub').textContent =
+      `Fehler beim Senden: ${err.message}`;
+    console.error(err);
+  } finally {
+    btn.textContent = 'Auswahl bestätigen →';
+    btn.disabled = false;
+  }
+
   document.getElementById('successOverlay').classList.add('show');
-  console.log('Kanalauswahl:', JSON.stringify(sel, null, 2));
-fetch('https://christoph-guse.app.n8n.cloud/webhook/save-topspiel-selection', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json'
-  },
-  body: JSON.stringify({
-    title: document.title,
-    taskId: new URLSearchParams(window.location.search).get('taskId'),
-    channels: sel,
-    eventName: document.getElementById('eventName')?.value || '',
-    logopaket: document.getElementById('logopaket')?.value || '',
-    sendezeiten: document.getElementById('sendezeiten')?.value || '',
-    spielereinsatz: document.getElementById('spielereinsatz')?.value || '',
-    hinweise: document.getElementById('hinweise')?.value || '',
-    timestamp: new Date().toISOString(),
-    hinweiseRedaktion: document.getElementById('hinweiseRedaktion')?.value || '',
-    exklusivitaet: radioState['exklusivitaet'] || '',
-    finalesWording: document.getElementById('finalesWording')?.value || '',
-    freigabeRedaktion: freigabeState['freigabe-redaktion'] || '',
-    freigabeMarketing: freigabeState['freigabe-marketing'] || '',
-    freigabeGF: freigabeState['freigabe-gf'] || ''
-  })
-})
-.then(() => {
-  console.log('Webhook gesendet');
-})
-.catch(error => {
-  console.error('Webhook Fehler:', error);
-});
-const inputData = {
-  eventName: document.getElementById('eventName').value,
-  logopaket: document.getElementById('logopaket').value,
-  spielereinsatz: document.getElementById('spielereinsatz').value,
-  sendezeiten: document.getElementById('sendezeiten').value,
-  exklusivitaet: radioState['exklusivitaet'] || '',
-  hinweiseRedaktion: document.getElementById('hinweiseRedaktion').value,
-  finalesWording: document.getElementById('finalesWording').value,
-  freigaben: freigabeState
-};
-  console.log('Input + Freigaben:', JSON.stringify(inputData, null, 2));
 }
 
 // URL params — für Asana-Link-Integration
