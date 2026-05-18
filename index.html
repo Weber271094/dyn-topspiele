@@ -735,7 +735,7 @@ async function submitSelection() {
       date:   p.get('date')   || document.getElementById('eventDate').textContent,
       comp:   p.get('comp')   || document.getElementById('eventComp').textContent,
       venue:  p.get('venue')  || document.getElementById('eventVenue').textContent,
-      asana_task_id: p.get('task_id') || ''
+      asana_task_id: p.get('taskId') || p.get('task_id') || ''
     },
     kanalauswahl: sel,
     input_redaktion: inputData
