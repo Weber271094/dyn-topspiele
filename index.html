@@ -708,9 +708,14 @@ async function submitSelection() {
   const sel = [];
   CHANNELS.forEach(ch => {
     if (state[ch.id].active) {
+      const gewaehlteFormate = Object.values(state[ch.id].formats)
+        .filter(f => f.selected)
+        .map(f => f.label);
       sel.push({
         kanal: ch.name,
-        formate: Object.values(state[ch.id].formats).filter(f => f.selected).map(f => f.label)
+        formate: gewaehlteFormate,
+        // Unteraufgabe anlegen wenn mindestens 1 Format gewählt
+        unteraufgabe_erstellen: gewaehlteFormate.length > 0
       });
     }
   });
